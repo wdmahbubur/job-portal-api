@@ -21,7 +21,7 @@ exports.signup = async (req, res) => {
 
     }
     catch (err) {
-        res.status(500).json({
+        res.status(400).json({
             message: err.message
         })
     }
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
     }
     catch (err) {
         console.error(err);
-        res.status(500).json({
+        res.status(400).json({
             message: err.message
         })
     }
@@ -79,11 +79,40 @@ exports.getLoggedUser = async (req, res) => {
         })
     }
     catch (err) {
-        res.status(500).json({
+        res.status(400).json({
             message: err.message
         })
     }
 }
+
+exports.updateUserToHR = async (req, res) => {
+    try {
+        const requestRole = req.user.role;
+        if (requestRole !== "admin") {
+            return res.status(403).json({
+                message: "You are not allowed to access this action."
+            });
+        }
+
+        const id = req.params.id;
+
+        const update = await User.update(id, { role: 'hr' }, { new: true });
+
+        if (update) {
+            res.status(200).json({
+                message: "User role update successful",
+            });
+        } else {
+            res.status(400).json({ message: "User not found" });
+        }
+    }
+    catch (err) {
+        res.status(400).json({
+            message: err.message
+        })
+    }
+}
+
 
 
 // exports.logout = async (req, res) => {

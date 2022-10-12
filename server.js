@@ -29,6 +29,7 @@ app.use(express.json());
 global.__basedir = "./public/"; // set base directory
 
 app.use("/api/v1/user", require("./routes/v1/user.routes"));
+app.use("/api/v1/", require("./routes/v1/job.routes"));
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 

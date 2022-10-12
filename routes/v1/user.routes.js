@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const { signup, login, getLoggedUser, getUsers, getUserById, updateUserById, deleteUserById } = require("../../controllers/user.controller");
+const { signup, login, getLoggedUser, updateUserToHR, getUsers, getUserById, updateUserById, deleteUserById } = require("../../controllers/user.controller");
 
 const upload = require("../../middleware/UploadImage");
 const { verifyAccessToken } = require("../../middleware/user.middleware");
@@ -8,6 +8,7 @@ const { verifyAccessToken } = require("../../middleware/user.middleware");
 router.post("/signup", upload.single("image"), signup);
 router.post("/login", login);
 router.get("/me", verifyAccessToken, getLoggedUser);
+router.patch("/role-update/:id", verifyAccessToken, updateUserToHR);
 
 // router.get("/", getUsers);
 // router.get("/:id", getUserById);

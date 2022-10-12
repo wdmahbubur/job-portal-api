@@ -51,26 +51,26 @@ const findOne = async (document) => {
 //     }
 // }
 
-// const update = async (id, document, options) => {
-//     try {
-//         const update = await User.findByIdAndUpdate(id, document, options);
-//         return update
-//     }
-//     catch (err) {
-//         console.log(err);
-//         if (err.code === 11000) {
-//             if (err.keyValue?.username) {
-//                 throw new Error("Username already exist");
-//             }
-//             if (err.keyValue?.email) {
-//                 throw new Error("Email already exist");
-//             }
-//         }
-//         else {
-//             throw new Error(err.message.split(":")[2]);
-//         }
-//     }
-// }
+const update = async (id, document, options) => {
+    try {
+        const update = await User.findByIdAndUpdate(id, document, options);
+        return update
+    }
+    catch (err) {
+        console.log(err);
+        if (err.code === 11000) {
+            if (err.keyValue?.username) {
+                throw new Error("Username already exist");
+            }
+            if (err.keyValue?.email) {
+                throw new Error("Email already exist");
+            }
+        }
+        else {
+            throw new Error(err.message.split(":")[2]);
+        }
+    }
+}
 
 // const remove = async (id) => {
 //     try {
@@ -89,6 +89,6 @@ module.exports = {
     findOne,
     // gets,
     // getById,
-    // update,
+    update,
     // remove
 };
