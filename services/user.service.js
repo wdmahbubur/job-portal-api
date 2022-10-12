@@ -20,6 +20,16 @@ const create = async (document) => {
     }
 }
 
+const findOne = async (document) => {
+    try {
+        const user = await User.findOne(document);
+        return user
+    }
+    catch (err) {
+        throw new Error(err.message);
+    }
+}
+
 // const gets = async (document) => {
 //     try {
 //         const users = await User.find(document);
@@ -76,6 +86,7 @@ const create = async (document) => {
 
 module.exports = {
     create,
+    findOne,
     // gets,
     // getById,
     // update,

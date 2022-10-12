@@ -1,4 +1,6 @@
-const { create, gets, getById, update, remove } = require("../services/user.service");
+const User = require("../services/user.service");
+
+const Token = require("../services/token.service");
 
 exports.signup = async (req, res) => {
     try {
@@ -9,9 +11,9 @@ exports.signup = async (req, res) => {
             email: req.body.email,
             phone: req.body.phone,
             password: req.body.password,
-            image: image
+            image: req.filename ? image : null
         }
-        await create(document);
+        await User.create(document);
 
         res.status(201).json({
             message: "Your account has been created successfully!",
@@ -24,6 +26,86 @@ exports.signup = async (req, res) => {
         })
     }
 }
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || email === null) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        if (!password || password === null) {
+            return res.status(400).json({ message: "Password is required" });
+        }
+
+        const query = { email: email };
+        const user = await User.findOne(query);
+        if (!user) {
+            return res.status(404).json({ message: "This email is not found!" });
+        }
+
+        const isPasswordMatch = await user.matchPassword(password);
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: "Password is incorrect!" });
+        }
+
+        if (user.status === "blocked") {
+            return res.status(403).json({ message: "You are not allowed to access this portal." });
+        }
+
+        const accessToken = await user.createAccessToken();
+        await Token.create({ token: accessToken });
+
+        res.json({
+            message: "User login successful",
+            token: accessToken,
+        });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getLoggedUser = async (req, res) => {
+    try {
+        const user = req.user;
+
+        res.status(200).json({
+            user
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+
+// exports.logout = async (req, res) => {
+//     try {
+//         let token = req.cookies.refreshToken;
+//         if (!token) {
+//             return res.status(404).json({ message: "User already logged out" })
+//         }
+//         const verifyToken = await Token.findOneAndDelete({ token: token });
+//         if (verifyToken) {
+//             return res.clearCookie("refreshToken", {
+//                 secure: true,
+//                 sameSite: 'none'
+//             }).json({ message: "Logged Out Successful" });
+//         }
+//         return res.json({ message: "Invalid Token" });
+//     }
+//     catch (err) {
+//         console.log(err.message);
+//         res.status(500).json({ message: "An error while logout admin" });
+//     }
+// }
 
 // exports.getUsers = async (req, res) => {
 //     try {

@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: [true, "Phone number is required"],
         validate: [validator.isMobilePhone, "Provided a valid phone number"]
     },
     password: {
@@ -48,6 +47,7 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: String,
+        default: null,
     },
     status: {
         type: String,
@@ -79,12 +79,11 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.methods.createAccessToken = async function () {
     try {
         const accessToken = jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: "1m"
-        })
+            expiresIn: "1d"
+        });
         return accessToken;
     }
     catch (err) {
-        console.log(err);
         throw new Error(err.message)
     }
 }
