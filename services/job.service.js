@@ -11,7 +11,7 @@ const create = async (document) => {
 
 const find = async (query, options) => {
     try {
-        const jobs = await Job.find(query).sort(options?.sort);
+        const jobs = await Job.find(query).sort(options?.sort).limit(options?.limit);
         return jobs
     }
     catch (err) {

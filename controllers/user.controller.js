@@ -1,6 +1,8 @@
 const User = require("../services/user.service");
 
 const Token = require("../services/token.service");
+const Application = require("../services/application.service");
+const ObjectId = require('mongoose').Types.ObjectId;
 
 exports.signup = async (req, res) => {
     try {
@@ -113,7 +115,66 @@ exports.updateUserToHR = async (req, res) => {
     }
 }
 
+exports.getAllCandidate = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'You are not allowed to access this resources' });
+        }
 
+        const query = { role: 'user' };
+        const candidates = await User.gets(query);
+        res.status(200).json({
+            candidates
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getUserById = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'You are not allowed to access this resources' });
+        }
+        const id = req.params.id;
+        const user = await User.getById(id);
+        const applications = await Application.find({ candidate: ObjectId(id) });
+
+        res.status(200).json({
+            user, applications
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getAllHR = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'You are not allowed to access this resources' });
+        }
+
+        const query = { role: 'hr' };
+        const hr = await User.gets(query);
+        res.status(200).json({
+            hr
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: err.message
+        })
+    }
+}
 
 // exports.logout = async (req, res) => {
 //     try {

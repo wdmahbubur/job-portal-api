@@ -1,6 +1,5 @@
 const Job = require('../services/job.service');
 const Application = require('../services/application.service');
-const { findOne } = require('../models/token.model');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 exports.addNewJob = async (req, res) => {
@@ -67,7 +66,9 @@ exports.getJobByIDPostingByRequestingHR = async (req, res) => {
         }
         const query = { _id: ObjectId(id), "hr.id": req.user._id };
 
-        const job = await Job.findOne(query);
+        let job = await Job.findOne(query);
+        job = await job.populate("applications", "-job");
+        job = await job.populate("applications.candidate", "-_id name username email image");
         res.status(200).json(job);
     }
     catch (err) {
@@ -201,6 +202,41 @@ exports.applyJob = async (req, res) => {
         await Job.update(id, { applications: newApplicationsArr }, { new: true });
 
         res.status(201).json({ message: 'Your application has been submitted successfully.' });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(400).json({
+            message: err.message
+        })
+    }
+}
+
+
+exports.getHighestPaidJobs = async (req, res) => {
+    try {
+        // get the highest paid jobs
+        const filters = {};
+        const options = { sort: { salary: -1 }, limit: 10 };
+
+        const jobs = await Job.find(filters, options);
+        res.status(200).json({ jobs: jobs });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(400).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getMostAppliedJobs = async (req, res) => {
+    try {
+        // get the highest applied jobs
+        const filters = {};
+        const options = { sort: { applications: -1 }, limit: 5 };
+
+        const jobs = await Job.find(filters, options);
+        res.status(200).json({ jobs: jobs });
     }
     catch (err) {
         console.error(err);

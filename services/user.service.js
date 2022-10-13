@@ -30,26 +30,26 @@ const findOne = async (document) => {
     }
 }
 
-// const gets = async (document) => {
-//     try {
-//         const users = await User.find(document);
-//         return users
-//     }
-//     catch (err) {
-//         throw new Error(err.message);
-//     }
-// }
+const gets = async (query) => {
+    try {
+        const users = await User.find(query).select('-password');
+        return users
+    }
+    catch (err) {
+        throw new Error(err.message);
+    }
+}
 
-// const getById = async (id) => {
-//     try {
-//         const user = await User.findById(id);
-//         return user
-//     }
-//     catch (err) {
-//         console.log(err)
-//         throw new Error(err.message);
-//     }
-// }
+const getById = async (id) => {
+    try {
+        const user = await User.findById(id).select("-password");
+        return user
+    }
+    catch (err) {
+        console.log(err)
+        throw new Error(err.message);
+    }
+}
 
 const update = async (id, document, options) => {
     try {
@@ -87,8 +87,8 @@ const update = async (id, document, options) => {
 module.exports = {
     create,
     findOne,
-    // gets,
-    // getById,
+    gets,
+    getById,
     update,
     // remove
 };
