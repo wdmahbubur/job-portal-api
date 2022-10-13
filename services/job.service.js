@@ -9,27 +9,37 @@ const create = async (document) => {
     }
 }
 
-const find = async (query) => {
+const find = async (query, options) => {
     try {
-        console.log(query);
-        const user = await Job.find(query);
-        return user
+        const jobs = await Job.find(query).sort(options?.sort);
+        return jobs
     }
     catch (err) {
         throw new Error(err.message);
     }
 }
 
-const findOne = async (document) => {
+const findOne = async (query) => {
     try {
-        const user = await Job.findOne(document);
-        return user
+        const job = await Job.findOne(query);
+        return job
     }
     catch (err) {
         throw new Error(err.message);
+    }
+}
+
+const update = async (id, document, options) => {
+    try {
+        const job = await Job.findByIdAndUpdate(id, document, options);
+        return job
+    }
+    catch (err) {
+        throw new Error(err.message.split(":")[2]);
+
     }
 }
 
 module.exports = {
-    create, find
+    create, find, findOne, update
 }
